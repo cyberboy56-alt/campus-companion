@@ -14,20 +14,28 @@ type Message = {
 
 const suggestions = [
   {
+    topic: "TIMETABLE",
     label: "Find my class timetable",
     question: "How do I find my class timetable?",
+    tone: "bg-[#e2efe6] text-[#245448]",
   },
   {
+    topic: "ADMISSIONS",
     label: "Applying for admission",
     question: "What should I know about applying for admission?",
+    tone: "bg-[#f8e7d6] text-[#96563d]",
   },
   {
+    topic: "EXAMS",
     label: "Exam information & support",
     question: "Where can I find exam information and accommodations?",
+    tone: "bg-[#e5ebf3] text-[#4c6580]",
   },
   {
+    topic: "CAMPUS LIFE",
     label: "Campus services and facilities",
     question: "What support and facilities are available on campus?",
+    tone: "bg-[#f1e8d3] text-[#846b38]",
   },
 ];
 
@@ -155,6 +163,13 @@ export default function Home() {
     void ask(question);
   }
 
+  function startNewConversation() {
+    setMessages([]);
+    setQuestion("");
+    setError("");
+    composerRef.current?.focus();
+  }
+
   function handleComposerKey(event: KeyboardEvent<HTMLTextAreaElement>) {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
@@ -221,11 +236,8 @@ export default function Home() {
           Workspace
         </div>
         <button
-          onClick={() => {
-            setMessages([]);
-            setError("");
-          }}
-          className="flex w-full items-center gap-2.5 rounded-lg bg-white/10 px-3 py-[11px] text-left text-sm text-white hover:bg-white/15"
+          onClick={startNewConversation}
+          className="flex w-full items-center gap-2.5 rounded-lg border border-white/10 bg-white/[.08] px-3 py-[11px] text-left text-sm text-white transition hover:border-[#d8bb7c]/50 hover:bg-white/[.13]"
           type="button"
         >
           <span className="text-xl leading-4 text-[#f2c871]">+</span> New
@@ -261,7 +273,7 @@ export default function Home() {
       </aside>
 
       <main className="flex min-h-screen min-w-0 flex-col">
-        <header className="flex h-[71px] shrink-0 items-center justify-between border-b border-[#e4eae4] bg-white/75 px-[17px] md:px-[39px] max-md:h-[58px]">
+        <header className="sticky top-0 z-10 flex h-[71px] shrink-0 items-center justify-between border-b border-[#dce5dd] bg-[#fbfcf8]/90 px-[17px] backdrop-blur-md md:px-[39px] max-md:h-[58px]">
           <div className="flex items-center gap-2 text-[12px] text-[#57675e] md:text-[13px]">
             <span className="grid size-8 place-items-center rounded-[10px] bg-[#e9be69] font-display text-lg text-[#183d34] md:hidden">
               C
@@ -272,6 +284,15 @@ export default function Home() {
             </span>
           </div>
           <div className="flex items-center gap-1.5 md:gap-2.5">
+            <button
+              onClick={startNewConversation}
+              aria-label="Start a new conversation"
+              title="Start a new conversation"
+              className="grid size-[34px] place-items-center rounded-[7px] border border-[#e4eae4] bg-white text-lg text-[#245448] transition hover:border-[#b9cbc0] hover:bg-[#f8fbf8] md:hidden"
+              type="button"
+            >
+              +
+            </button>
             <label className="sr-only" htmlFor="language">
               Answer language
             </label>
@@ -298,43 +319,83 @@ export default function Home() {
 
         <section
           aria-label="Student support chat"
-          className="mx-auto flex min-h-[calc(100vh-58px)] w-full max-w-[820px] flex-1 flex-col px-[17px] pb-5 pt-7 md:min-h-[calc(100vh-71px)] md:px-[30px] md:pt-[39px]"
+          className="mx-auto flex min-h-[calc(100vh-58px)] w-full max-w-[1060px] flex-1 flex-col px-[17px] pb-5 pt-7 md:min-h-[calc(100vh-71px)] md:px-[42px] md:pt-[42px]"
         >
           {messages.length === 0 ? (
-            <div className="my-auto mb-[27px] pt-2 md:pt-[22px]">
-              <div className="inline-flex items-center gap-[7px] rounded-full border border-[#d7e6da] bg-[#edf5ed] px-[10px] py-[7px] text-[11px] font-semibold text-[#245448]">
-                <span className="text-sm text-[#d96e53]" aria-hidden="true">
-                  ✳
-                </span>{" "}
-                YOUR CAMPUS, A LITTLE CLOSER
+            <div className="my-auto mb-[27px] grid gap-10 py-3 lg:grid-cols-[minmax(0,1fr)_minmax(370px,.9fr)] lg:items-center lg:gap-[72px]">
+              <div className="max-w-[520px] animate-[arrive_.5s_ease-out_both]">
+                <div className="inline-flex items-center gap-[9px] border-l-2 border-[#d96e53] bg-[#eaf1e9] px-3 py-2 text-[10px] font-bold uppercase tracking-[1.1px] text-[#245448]">
+                  <span className="text-[#d96e53]" aria-hidden="true">
+                    ✳
+                  </span>
+                  Student help desk
+                </div>
+                <h1 className="mb-4 mt-6 max-w-[560px] font-display text-[42px] font-medium leading-[1.03] text-[#20332d] sm:text-[48px] md:text-[56px]">
+                  Here for your next{" "}
+                  <span className="text-[#b85f49]">question.</span>
+                </h1>
+                <p className="max-w-[430px] text-[15px] leading-[1.8] text-[#68786e] md:text-base">
+                  From your first application to finals week, find a clear next
+                  step for campus life.
+                </p>
+                <div className="mt-8 flex items-center gap-3 border-t border-[#dce5dd] pt-5 text-xs text-[#65736b]">
+                  <span
+                    className={`size-2 rounded-full ${openAiReady ? "bg-[#4b9b68] shadow-[0_0_0_4px_#4b9b681c]" : "bg-[#d39b48] shadow-[0_0_0_4px_#d39b481c]"}`}
+                  />
+                  <span>
+                    {openAiReady
+                      ? "AI support is online"
+                      : "University information is ready"}
+                  </span>
+                </div>
               </div>
-              <h1 className="mb-2.5 mt-[19px] max-w-[620px] font-display text-[36px] font-medium leading-[1.12] text-[#20332d] md:text-[48px]">
-                Here for your next question.
-              </h1>
-              <p className="max-w-[500px] text-sm leading-[1.7] text-[#75817a] md:text-[15px]">
-                From your first application to finals week, get a clear starting
-                point for the things students need to know.
-              </p>
-              <div className="mb-2.5 mt-6 text-[11px] font-bold uppercase tracking-[.7px] text-[#65736b]">
-                A few places to start
-              </div>
-              <div className="grid gap-[7px] sm:grid-cols-2 sm:gap-[9px]">
-                {suggestions.map((suggestion) => (
-                  <button
-                    key={suggestion.label}
-                    onClick={() => void ask(suggestion.question)}
-                    type="button"
-                    className="flex min-h-[47px] items-center justify-between gap-3 rounded-lg border border-[#e1e8e1] bg-white/80 px-[13px] py-[11px] text-left text-[13px] text-[#3c5147] transition hover:-translate-y-px hover:border-[#b7d1bf] hover:shadow-[0_6px_18px_rgba(35,68,54,.06)] sm:min-h-[55px] sm:text-sm"
-                  >
-                    {suggestion.label}
-                    <span
-                      className="text-[17px] text-[#d96e53]"
-                      aria-hidden="true"
+              <div className="animate-[arrive_.65s_ease-out_both] lg:pt-7">
+                <div className="mb-4 flex items-end justify-between gap-4 border-b border-[#cbd9ce] pb-4">
+                  <div>
+                    <p className="mb-1 text-[10px] font-bold uppercase tracking-[1.15px] text-[#9a644d]">
+                      Find your way
+                    </p>
+                    <h2 className="font-display text-[25px] font-medium text-[#20332d] md:text-[28px]">
+                      Start with a topic
+                    </h2>
+                  </div>
+                  <span className="pb-1 text-[11px] text-[#849087]">
+                    01 — 04
+                  </span>
+                </div>
+                <div className="divide-y divide-[#e0e7e0] border-y border-[#d3ded5]">
+                  {suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.label}
+                      onClick={() => void ask(suggestion.question)}
+                      type="button"
+                      className="group flex min-h-[76px] w-full items-center gap-3.5 px-2 py-3 text-left transition-colors hover:bg-white/70 sm:gap-4 sm:px-3"
                     >
-                      ↗
-                    </span>
-                  </button>
-                ))}
+                      <span
+                        className={`grid size-10 shrink-0 place-items-center rounded-[11px] text-[10px] font-bold tracking-[.2px] transition-transform group-hover:scale-105 ${suggestion.tone}`}
+                      >
+                        {String(suggestions.indexOf(suggestion) + 1).padStart(
+                          2,
+                          "0",
+                        )}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="mb-1 block text-[9px] font-bold uppercase tracking-[1px] text-[#9a644d]">
+                          {suggestion.topic}
+                        </span>
+                        <span className="block text-sm font-semibold text-[#30473b] sm:text-[15px]">
+                          {suggestion.label}
+                        </span>
+                      </span>
+                      <span
+                        aria-hidden="true"
+                        className="pr-1 text-lg text-[#bc6a50] transition-transform group-hover:translate-x-1"
+                      >
+                        ↗
+                      </span>
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           ) : (
