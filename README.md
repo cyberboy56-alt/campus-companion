@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Campus Companion
 
-## Getting Started
+A student-support chat prototype built with FastAPI, LangChain, OpenAI, and SQLite. The included university information is sample content; add or replace it with your institution's verified policies before sharing this app with students.
 
-First, run the development server:
+## Run locally
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Add your OpenAI API key to `.env`, then start FastAPI in one terminal:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```powershell
+uvicorn main:app --reload
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+In a second terminal, start the Next.js + Tailwind frontend:
 
-## Learn More
+```powershell
+cd frontend
+npm install
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open <http://localhost:3000>. The Next.js dev server proxies `/api/*` to FastAPI at `http://127.0.0.1:8000`. Set `FASTAPI_URL` if the backend runs elsewhere. Without an API key, the app still answers from matching SQLite entries using a simple local response. With a key configured, LangChain sends the question and retrieved university information to the selected OpenAI model. Answers are prompted to stay within that information and to identify when it is missing.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## University information
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The database is created at `data/student_support.db` on first start and seeded with clearly generic sample entries. Use **Add information** in the interface to add verified items; they are searchable immediately. You can change the database location with `DATABASE_PATH` or `DATA_DIR`.
 
-## Deploy on Vercel
+The language selector guides OpenAI responses in English, Spanish, French, or Hindi. The local no-key fallback currently returns its fixed response in English.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This is a local prototype, not a production 24/7 service. Before deployment, protect knowledge editing with university authentication, replace sample information, add monitoring and backups, and configure a production hosting and uptime strategy.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## GitHub Pages and Render deployment
+
+The Pages workflow publishes the static Next.js frontend at `https://cyberboy56-alt.github.io/campus-companion/`. It skips deployment until the GitHub repository variable `API_URL` contains the deployed FastAPI origin (for example, the Render service URL), avoiding a published chat that cannot reach its API. Set Pages to use **GitHub Actions** in the repository settings, then rerun the workflow after setting `API_URL`.
+
+`render.yaml` describes the FastAPI service and a persistent SQLite disk. The disk requires a paid Render plan; deploying the blueprint can incur charges. This project setup does not create Render resources. Add the OpenAI key in Render's environment settings if AI-generated answers are required, and set `CORS_ORIGINS` to `https://cyberboy56-alt.github.io`.
+
+The Pages workflow cannot publish a working app until the Render API is deployed and `API_URL` is set. GitHub Pages hosts only the static frontend, not FastAPI or SQLite.
